@@ -37,10 +37,14 @@ my $server = q|http://photography.nationalgeographic.com|;
 
 $mech->get("$server/photography/photo-of-the-day?nav=TOPNAV");
 sleep 1; # do not be rude 
-$mech->follow_link( text_regex => qr/Wallpaper$/);
+# todays photo do not have download link, but yesterdays have
+$mech->follow_link( text_regex => qr/Previous/);
+sleep 1; # do not be rude
+$mech->follow_link( text_regex => qr/Download Wallpaper/);
 sleep 1; # do not be rude
 
-$mech->follow_link( text_regex => qr/$VALID_SIZES{$size}/i);
+#sizes are not availebe any more
+#$mech->follow_link( text_regex => qr/$VALID_SIZES{$size}/i);
 
 
 my $filename = $mech->uri->path;

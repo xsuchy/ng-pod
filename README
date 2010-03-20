@@ -1,0 +1,25 @@
+NG Pod
+Download "Photo of the Day" wallpaper from National Geographic website.
+
+Prerequisites: 
+Perl modul WWW::Mechanize (run perl -MCPAN -e 'install WWW::Mechanize' to install)
+
+Intruction:
+Run "photo-of-the-day --man" to get full help.
+I run this command every day (using cron):
+photo-of-the-day --filename /home/mirek/NG-photo/photo-of-the-day.jpg --store-old=/home/mirek/NG-photos-archive/
+
+Released under GPL
+
+http://sourceforge.net/projects/ng-pod/
+
+TODO:
+ * notify KDE4 that wallpapers has been changed
+ * same for KDE3
+ * prepare rpm package
+ * prepare deb package
+
+And of course - patches are welcome!
+
+Miroslav Suchý <msuchy@redhat.com>
+

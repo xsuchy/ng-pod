@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+use strict;
+use WWW::Mechanize;
+use Getopt::Long;
+use Pod::Usage;
+
+my $size = '1280x1024';
+my $store_filename = 'NG-photo-of-the-day.jpg';
+my $store_old;
+my $man = 0;
+my $help = 0;
+
+# map size resolution to link regexp
+my %VALID_SIZES = (  
+    '800x600'   => '800 x 600 pixels',
+    '1024x768'  => '1024 x 768 pixels',
+    '1280x1024' => '1280 x 1024 pixels',
+);
+
+GetOptions ("size=s" => \$size,
+    "filename=s" => \$store_filename,
+    "store-old=s" => \$store_old,
+    "help" => \$help,
+    "man" => \$man); 
+
+pod2usage(-verbose => '0E') if $help;
+pod2usage(-exitstatus => 0, -verbose => 2) if $man;
+
+if (!$VALID_SIZES{$size}) {
+    print STDERR "Warning: Unsupported size $size. Using 1280x1024.\n";
+    $size = '1280x1024';
+}
+
+my $mech = WWW::Mechanize->new;
+
+my $server = q|http://photography.nationalgeographic.com|;
+
+$mech->get("$server/photography/photo-of-the-day?nav=TOPNAV");
+sleep 1; # do not be rude 
+$mech->follow_link( text_regex => qr/Wallpaper$/);
+sleep 1; # do not be rude
+
+$mech->follow_link( text_regex => qr/$VALID_SIZES{$size}/i);
+
+
+my $filename = $mech->uri->path;
+$filename =~ s|.*/(.*)|$1|;
+
+
+if ($store_old) { # preserve old files and create link to new one
+    $mech->save_content($store_old . $filename);
+    unlink($store_filename);
+    symlink($store_old . $filename, $store_filename);
+} else { # rewrite old file
+    $mech->save_content($store_filename);
+}
+
+=head1 NAME
+
+photo-of-the-day - Download "Photo of the Day" wallpaper from National Geographic website.
+
+=head1 SYNOPSIS
+
+photo-of-the-day [options]
+
+ Options:
+   --help            brief help message
+   --man             full documentation
+   --size=XxY        size of image
+   --filename=file   name of file to store
+   --store-old=dir   preserve old photos and create link to new one
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits.
+
+=item B<--size=WIDTHxHEIGHT>
+
+Size of image to download. National Geographic support this sizes: 800x600, 1024x768x and 1280x1024. 
+Default size is 1280x1024. 
+
+=item B<--filename=file>
+
+Name of file where to store downloaded photo. Default is NG-photo-of-the-day.jpg
+
+=item B<--store-old=dir>
+
+Normaly new photo will overwrite old photo. If you specify --store-old, then new photo is stored to new file in directory I<dir> (name is taken from name of photo on NG website) and NG-photo-of-the-day.jpg will be symlink to this new photo.
+I<Dir> should be absolute path.
+
+=back
+
+=head1 AUTHOR
+
+Miroslav Suchý <msuchy@redhat.com>
+
+http://sourceforge.net/projects/ng-pod/
+
+=cut   
+

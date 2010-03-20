@@ -11,7 +11,7 @@ photo-of-the-day --filename /home/mirek/NG-photo/photo-of-the-day.jpg --store-ol
 
 Released under GPL
 
-http://sourceforge.net/projects/ng-pod/
+http://github.com/xsuchy/ng-pod
 
 TODO:
  * notify KDE4 that wallpapers has been changed

@@ -3,6 +3,8 @@ use strict;
 use WWW::Mechanize;
 use Getopt::Long;
 use Pod::Usage;
+use Image::Magick;
+
 
 my $size = '1280x1024';
 my $store_filename = 'NG-photo-of-the-day.jpg';
@@ -15,6 +17,7 @@ my %VALID_SIZES = (
     '800x600'   => '800 x 600 pixels',
     '1024x768'  => '1024 x 768 pixels',
     '1280x1024' => '1280 x 1024 pixels',
+    '1600x1200' => '1600 x 1200 pixels',
 );
 
 GetOptions ("size=s" => \$size,
@@ -28,7 +31,7 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $man;
 
 if (!$VALID_SIZES{$size}) {
     print STDERR "Warning: Unsupported size $size. Using 1280x1024.\n";
-    $size = '1280x1024';
+    $size = '1600x1200';
 }
 
 my $mech = WWW::Mechanize->new;
@@ -50,13 +53,17 @@ sleep 1; # do not be rude
 my $filename = $mech->uri->path;
 $filename =~ s|.*/(.*)|$1|;
 
+my $image=Image::Magick->new(magick=>'jpg');
+$image->BlobToImage($mech->content);
+$image->Resize(geometry=>$size);
+
 
 if ($store_old) { # preserve old files and create link to new one
-    $mech->save_content($store_old . $filename);
+    $image->Write($store_old . $filename);
     unlink($store_filename);
     symlink($store_old . $filename, $store_filename);
 } else { # rewrite old file
-    $mech->save_content($store_filename);
+    $image->Write($store_filename);
 }
 
 =head1 NAME
@@ -88,8 +95,8 @@ Prints the manual page and exits.
 
 =item B<--size=WIDTHxHEIGHT>
 
-Size of image to download. National Geographic support this sizes: 800x600, 1024x768x and 1280x1024. 
-Default size is 1280x1024. 
+Size of image to download. National Geographic support this sizes: 800x600, 1024x768, 1280x1024 and 1600x1200 
+Default size is 1600x1200. 
 
 =item B<--filename=file>
 

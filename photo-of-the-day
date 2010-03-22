@@ -40,12 +40,16 @@ my $server = q|http://photography.nationalgeographic.com|;
 
 $mech->get("$server/photography/photo-of-the-day?nav=TOPNAV");
 sleep 1; # do not be rude 
-# todays photo do not have download link, but yesterdays have
-$mech->follow_link( text_regex => qr/Previous/);
-sleep 1; # do not be rude
-$mech->follow_link( text_regex => qr/Download Wallpaper/);
-sleep 1; # do not be rude
-
+my $download_link = $mech->find_link( text_regex => qr/Download Wallpaper/);
+if ($download_link) {
+        # Download link is available
+        $mech->get($download_link);
+} else {
+        # we had to download lowres picture :(
+        print "Image is not available for download. Sorry. Using low res image, which is available.\n";
+        my @image = $mech->find_image( alt_regex => qr/Photo: / );
+        $mech->get($image[0]->url_abs);
+}
 #sizes are not availebe any more
 #$mech->follow_link( text_regex => qr/$VALID_SIZES{$size}/i);
 

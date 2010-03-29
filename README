@@ -3,6 +3,7 @@ Download "Photo of the Day" wallpaper from National Geographic website.
 
 Prerequisites: 
 Perl modul WWW::Mechanize (run perl -MCPAN -e 'install WWW::Mechanize' to install)
+Perl modul Image::Magick (run perl -MCPAN -e 'install Image::Magick' to install)
 
 Intruction:
 Run "photo-of-the-day --man" to get full help.

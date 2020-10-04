@@ -1,5 +1,5 @@
 NG Pod
-Download "Photo of the Day" wallpaper from National Geographic website.
+Download "Best Photo of the Day" wallpaper from National Geographic website.
 
 Prerequisites: 
 Perl modul WWW::Mechanize (run perl -MCPAN -e 'install WWW::Mechanize' to install)
